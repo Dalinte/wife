@@ -6,7 +6,7 @@ export default function WifeModel() {
 
     return (
         <mesh>
-            <primitive object={scene} />
+            <primitive rotation-y={3.1} object={scene} />
         </mesh>
     )
 }

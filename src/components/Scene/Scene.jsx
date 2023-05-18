@@ -1,6 +1,6 @@
 import {Canvas} from "@react-three/fiber";
-import WifeModel from "./WifeModel.jsx";
-import Background from "./Background.jsx";
+import WifeModel from "../WifeModel/WifeModel.jsx";
+import Background from "../Background/Background.jsx";
 import { Environment, OrbitControls } from "@react-three/drei";
 
 export default function Scene () {

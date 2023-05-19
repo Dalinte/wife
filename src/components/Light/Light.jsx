@@ -8,10 +8,11 @@ export default function Light () {
 
     return (
         <directionalLight
-            position={[-2, 3, 0]}
+            position={[-2, 2.7, 1.6]}
             color={"#ffa700"}
             intensity={2}
             ref={dirLight}
+            target-position={[4, 0, -1]}
         />
     );
 };

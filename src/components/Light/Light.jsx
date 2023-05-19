@@ -9,28 +9,31 @@ export default function Light () {
 
     const defaultValues = {
         color: "#ffa700",
-        intensity: 2
+        intensity: 2,
+        position: [-2, 2.7, 1.6],
+        targetPosition: [4, 0, -1],
     }
 
-    const {color, intensity} = useControls(
+    const {color, intensity, position, targetPosition} = useControls(
         'Light',
         {
             color: defaultValues.color,
             intensity: {
-                value: defaultValues.intensity,
+                    value: defaultValues.intensity,
                     min: 0,
                     max: 10
-                }
-            }
-        )
+            },
+            position: defaultValues.position,
+            targetPosition: defaultValues.targetPosition,
+        })
 
     return (
         <directionalLight
-            position={[-2, 2.7, 1.6]}
+            position={position}
             color={color}
             intensity={intensity}
             ref={dirLight}
-            target-position={[4, 0, -1]}
+            target-position={targetPosition}
         />
     );
-};
+}

@@ -4,9 +4,6 @@ import {DirectionalLightHelper} from "three";
 import { useControls } from 'leva'
 
 export default function Light () {
-    const dirLight = useRef(null);
-    useHelper(dirLight, DirectionalLightHelper, 0.5);
-
     const defaultValues = {
         color: "#ffa700",
         intensity: 2,
@@ -14,7 +11,7 @@ export default function Light () {
         targetPosition: [4, 0, -1],
     }
 
-    const {color, intensity, position, targetPosition} = useControls(
+    const {color, intensity, position, targetPosition, showLightHelper} = useControls(
         'Light',
         {
             color: defaultValues.color,
@@ -25,7 +22,11 @@ export default function Light () {
             },
             position: defaultValues.position,
             targetPosition: defaultValues.targetPosition,
+            showLightHelper: true
         })
+
+    const dirLight = useRef(null);
+    useHelper(dirLight, showLightHelper && DirectionalLightHelper, 0.5);
 
     return (
         <directionalLight

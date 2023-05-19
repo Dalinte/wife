@@ -3,7 +3,7 @@ import {GLTFLoader} from "three/addons/loaders/GLTFLoader.js";
 
 export default function Room() {
     const {scene} = useLoader(GLTFLoader, '/wife/room.glb')
-    console.log(scene)
+
     return (
         <mesh scale={[30, 30, 30]}>
             <primitive object={scene} />

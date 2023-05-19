@@ -7,7 +7,7 @@ import Light from "../Light/Light.jsx";
 
 export default function Scene () {
     return (
-        <Canvas camera={{ lookat: [-2, 10, 0], position: [1, 2.5, 4], fov: 40 }}>
+        <Canvas camera={{ lookat: [-2, 0, 0], position: [1, 3, 4], fov: 45 }}>
             <group position={[0, -0.5, 0]}>
                 <WifeModel/>
                 <Room/>
@@ -15,7 +15,6 @@ export default function Scene () {
             </group>
 
             <OrbitControls/>
-            <Environment preset="sunset" background />
         </Canvas>
     )
 }

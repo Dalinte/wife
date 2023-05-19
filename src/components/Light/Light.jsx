@@ -5,14 +5,14 @@ import { useControls } from 'leva'
 
 export default function Light () {
     const defaultValues = {
-        color: "#ffa700",
-        intensity: 2,
+        color: "#e8bb68",
+        intensity: 1,
         position: [-2, 2.7, 1.6],
         targetPosition: [4, 0, -1],
     }
 
     const {color, intensity, position, targetPosition, showLightHelper} = useControls(
-        'Light',
+        'DirectionalLight',
         {
             color: defaultValues.color,
             intensity: {
@@ -29,12 +29,15 @@ export default function Light () {
     useHelper(dirLight, showLightHelper && DirectionalLightHelper, 0.5);
 
     return (
-        <directionalLight
-            position={position}
-            color={color}
-            intensity={intensity}
-            ref={dirLight}
-            target-position={targetPosition}
-        />
+        <>
+            <directionalLight
+                position={position}
+                color={color}
+                intensity={intensity}
+                ref={dirLight}
+                target-position={targetPosition}
+            />
+            <ambientLight color={'#ffffff'} intensity={0.1}/>
+        </>
     );
 }

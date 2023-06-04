@@ -5,7 +5,7 @@ import { useControls } from 'leva'
 
 export default function Light () {
     const defaultValues = {
-        color: "#e8bb68",
+        color: "#bdd0e4",
         intensity: 1,
         position: [-2, 2.7, 1.6],
         targetPosition: [4, 0, -1],
@@ -22,7 +22,7 @@ export default function Light () {
             },
             position: defaultValues.position,
             targetPosition: defaultValues.targetPosition,
-            showLightHelper: true
+            showLightHelper: false
         })
 
     const dirLight = useRef(null);

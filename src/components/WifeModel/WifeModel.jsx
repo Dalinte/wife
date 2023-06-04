@@ -18,10 +18,10 @@ export default function WifeModel() {
     const previousAction = usePrevious('Typing');
 
     useEffect(() => {
-        Object.values(actions).forEach((action) => {
-            action.setLoop(LoopOnce)
-            action.clampWhenFinished = true
-        })
+        // Object.values(actions).forEach((action) => {
+        //     action.setLoop(LoopOnce)
+        //     action.clampWhenFinished = true
+        // })
 
         if (previousAction) {
             actions[previousAction].fadeOut(0.2);

@@ -15,12 +15,13 @@ export default function Scene () {
             <group scale={scale}>
                 <WifeModel/>
                 <Room/>
+                <Light/>
             </group>
-            <Light/>
+
             <Camera/>
             <Environment background blur={0.1} files="wife/suburban_parking_area_1k.hdr" />
             <Perf position="top-left" />
-            <OrbitControls/>
+            {/*<OrbitControls/>*/}
         </Canvas>
     )
 }

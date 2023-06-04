@@ -11,12 +11,10 @@ export default function WifeModel() {
                 action: 'Typing',
             ' ': buttonGroup({
                 'Typing' : () => set({ action: 'Typing' }),
-                'sit_to_type': () => set({ action: 'sit_to_type' }),
-                'type_to_sit': () => set({ action: 'type_to_sit' }),
+                'blinkingBP': () => set({ action: 'blinkingBP' }),
              }),
         }))
 
-    // console.log(animations)
     const previousAction = usePrevious('Typing');
 
     useEffect(() => {
@@ -43,7 +41,6 @@ export default function WifeModel() {
         </mesh>
     )
 }
-
 
 function usePrevious(value) {
     const ref = useRef();

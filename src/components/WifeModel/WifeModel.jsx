@@ -5,18 +5,19 @@ import {useControls, buttonGroup} from "leva";
 
 export default function WifeModel() {
     const ref = useRef()
-    const {scene, animations} = useGLTF('/wife/typing-3.glb')
+    const {scene, animations} = useGLTF('/wife/AnimateGirleDemo.glb')
     const {actions} = useAnimations(animations, scene)
     const [values, set] = useControls(() => ({
-                action: 'typing',
+                action: 'Typing',
             ' ': buttonGroup({
-                'typing' : () => set({ action: 'typing' }),
+                'Typing' : () => set({ action: 'Typing' }),
                 'sit_to_type': () => set({ action: 'sit_to_type' }),
                 'type_to_sit': () => set({ action: 'type_to_sit' }),
              }),
         }))
 
-    const previousAction = usePrevious('typing');
+    // console.log(animations)
+    const previousAction = usePrevious('Typing');
 
     useEffect(() => {
         Object.values(actions).forEach((action) => {
@@ -36,9 +37,8 @@ export default function WifeModel() {
     return (
         <mesh ref={ref}>
             <primitive
-                position={[-0.43, 0.1, -0.25]}
+                position={[-0.43, 0.43, 0.56]}
                 object={scene}
-                rotation-y={-Math.PI/2}
             />
         </mesh>
     )

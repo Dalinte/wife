@@ -11,31 +11,31 @@ export default function Light () {
         targetPosition: [4, 0, -1],
     }
 
-    const {color, intensity, position, targetPosition, showLightHelper} = useControls(
-        'DirectionalLight',
-        {
-            color: defaultValues.color,
-            intensity: {
-                    value: defaultValues.intensity,
-                    min: 0,
-                    max: 10
-            },
-            position: defaultValues.position,
-            targetPosition: defaultValues.targetPosition,
-            showLightHelper: false
-        })
-
-    const dirLight = useRef(null);
-    useHelper(dirLight, showLightHelper && DirectionalLightHelper, 0.5);
+    // const {color, intensity, position, targetPosition, showLightHelper} = useControls(
+    //     'DirectionalLight',
+    //     {
+    //         color: defaultValues.color,
+    //         intensity: {
+    //                 value: defaultValues.intensity,
+    //                 min: 0,
+    //                 max: 10
+    //         },
+    //         position: defaultValues.position,
+    //         targetPosition: defaultValues.targetPosition,
+    //         showLightHelper: false
+    //     })
+    //
+    // const dirLight = useRef(null);
+    // useHelper(dirLight, showLightHelper && DirectionalLightHelper, 0.5);
 
     return (
         <>
             <directionalLight
-                position={position}
-                color={color}
-                intensity={intensity}
-                ref={dirLight}
-                target-position={targetPosition}
+                position={defaultValues.position}
+                color={defaultValues.color}
+                intensity={defaultValues.intensity}
+                ref={defaultValues.dirLight}
+                target-position={defaultValues.targetPosition}
             />
             <ambientLight color={'#ffffff'} intensity={0.1}/>
         </>

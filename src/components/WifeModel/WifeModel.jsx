@@ -35,7 +35,7 @@ export default function WifeModel() {
     return (
         <mesh ref={ref}>
             <primitive
-                position={[-0.43, 0.43, 0.56]}
+                position={[-55, 43, 66]}
                 object={scene}
             />
         </mesh>

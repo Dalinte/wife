@@ -1,21 +1,22 @@
 import {useAnimations, useGLTF} from "@react-three/drei";
 import {useEffect, useRef} from "react";
-import { LoopOnce } from "three";
-import {useControls, buttonGroup} from "leva";
+import {useControls} from "leva";
 
 export default function WifeModel() {
     const ref = useRef()
-    const {scene, animations} = useGLTF('/wife/AnimateGirleDemo.glb')
+    const {scene, animations} = useGLTF('/wife/AnimateGirle1.glb')
     const {actions} = useAnimations(animations, scene)
-    const [values, set] = useControls(() => ({
-                action: 'Typing',
-            ' ': buttonGroup({
-                'Typing' : () => set({ action: 'Typing' }),
-                'blinkingBP': () => set({ action: 'blinkingBP' }),
-             }),
-        }))
 
-    const previousAction = usePrevious('Typing');
+    const {animation: selectedAnimationName} = useControls({
+        animation: {
+            value: animations?.[0]?.name,
+            options: animations.map((animation) => animation.name)
+        }
+    })
+
+    console.log(selectedAnimationName, animations)
+
+    const previousAction = usePrevious('IdleF1');
 
     useEffect(() => {
         // Object.values(actions).forEach((action) => {
@@ -25,11 +26,12 @@ export default function WifeModel() {
 
         if (previousAction) {
             actions[previousAction].fadeOut(0.2);
-            actions[values.action].stop();
+            actions[previousAction].stop();
         }
-        actions[values.action].play();
-        actions[values.action].fadeIn(0.2)
-    }, [actions, values.action, previousAction])
+        console.log(actions[selectedAnimationName])
+        actions[selectedAnimationName].play();
+        actions[selectedAnimationName].fadeIn(0.2)
+    }, [actions, selectedAnimationName, previousAction])
 
 
     return (

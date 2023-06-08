@@ -21,7 +21,7 @@ export default function Scene () {
             <Camera/>
             <Environment background blur={0.1} files="suburban_parking_area_1k.hdr" />
             <Perf position="top-left" />
-            {/*<OrbitControls/>*/}
+            <OrbitControls/>
         </Canvas>
     )
 }

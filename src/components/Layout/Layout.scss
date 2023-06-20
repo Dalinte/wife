@@ -1,0 +1,41 @@
+$grid-column-gap: 50px;
+$grid-row-gap: 100px;
+
+.layout {
+  height: 100vh;
+  display: grid;
+  grid-template-areas:
+          'music-player chat'
+          'canvas-container chat'
+          'donate chat';
+  grid-gap: 50px 100px;
+  grid-template-columns: calc(70% - $grid-row-gap) 30%;
+  grid-template-rows: 100px calc(100% - 200px - $grid-column-gap * 2) 100px;
+
+  &__canvas-container {
+     grid-area: canvas-container;
+     height: 100%;
+     position: relative;
+   }
+
+  &__chat {
+    grid-area: chat;
+    height: 100%;
+  }
+
+  &__music-player {
+    grid-area: music-player;
+    height: 100%;
+  }
+
+  &__donate {
+    grid-area: donate;
+    height: 100%;
+  }
+
+  .gui-container > [class^="leva-"] {
+    position: absolute;
+  }
+}
+
+

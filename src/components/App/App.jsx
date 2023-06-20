@@ -1,11 +1,9 @@
-import './App.css'
-import Scene from "../Scene/Scene.jsx";
+import './App.scss'
+import Layout from "../Layout/Layout.jsx";
 
 function App() {
     return (
-        <div className="canvas-container">
-            <Scene/>
-        </div>
+        <Layout/>
     )
 }
 

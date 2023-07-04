@@ -1,5 +1,5 @@
 import {useAnimations, useGLTF} from "@react-three/drei";
-import {useEffect, useRef} from "react";
+import {useRef} from "react";
 import {useControls} from "leva";
 
 export default function WifeModel() {
@@ -7,32 +7,17 @@ export default function WifeModel() {
     const {scene, animations} = useGLTF('/wife/AnimateGirle1.glb')
     const {actions} = useAnimations(animations, scene)
 
-    const {animation: selectedAnimationName} = useControls({
-        animation: {
-            value: animations?.[0]?.name,
-            options: animations.map((animation) => animation.name)
+    const animationsForGui = animations.reduce((animations, currentAnimations) => {
+        animations[removeDot(currentAnimations.name)] = {
+            value: 0,
+            min: 0,
+            max: 1,
         }
-    })
+        return animations
+    }, {})
 
-    console.log(selectedAnimationName, animations)
-
-    const previousAction = usePrevious('IdleF1');
-
-    useEffect(() => {
-        // Object.values(actions).forEach((action) => {
-        //     action.setLoop(LoopOnce)
-        //     action.clampWhenFinished = true
-        // })
-
-        if (previousAction) {
-            actions[previousAction].fadeOut(0.2);
-            actions[previousAction].stop();
-        }
-        console.log(actions[selectedAnimationName])
-        actions[selectedAnimationName].play();
-        actions[selectedAnimationName].fadeIn(0.2)
-    }, [actions, selectedAnimationName, previousAction])
-
+    const animationsWeight = useControls(animationsForGui)
+    activateAllActions(actions, animationsWeight)
 
     return (
         <mesh ref={ref}>
@@ -44,12 +29,19 @@ export default function WifeModel() {
     )
 }
 
-function usePrevious(value) {
-    const ref = useRef();
+function activateAllActions (actions, animationsWeight) {
+    Object.values(actions).forEach((action) => {
+        setWeight(action, animationsWeight[action._clip.name])
+        action.play()
+    })
+}
 
-    useEffect(() => {
-        ref.current = value
-    }, [value])
+function setWeight( action, weight ) {
+    action.enabled = true;
+    action.setEffectiveTimeScale( 1 );
+    action.setEffectiveWeight( weight );
+}
 
-    return ref.current
+function removeDot(string) {
+    return string.replace(/[.\s]/g, '')
 }

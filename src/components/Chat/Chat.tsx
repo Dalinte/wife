@@ -7,7 +7,6 @@ import {
     useCreateChatCompletionMutation
 } from "../../shared/api/query";
 import {LOCALSTORAGE_OPENAI_API_KEY} from "../../shared/consts/global.consts";
-import {log} from "leva/dist/declarations/src/utils";
 
 interface Message {
     content: ChatCompletionResponseMessage['content']
@@ -125,7 +124,7 @@ function Chat() {
                         className="mx-2 flex min-h-full w-full rounded-md border border-slate-300 bg-slate-50 p-2 text-base text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400 dark:focus:border-blue-600 dark:focus:ring-blue-600"
                         placeholder="Start chatting with wife"
                         value={inputText}
-                        disabled={!saveInitSettings}
+                        disabled={!saveInitSettings && hasKey}
                         onChange={(e) => {
                             setInputText(e.target.value)
                         }}

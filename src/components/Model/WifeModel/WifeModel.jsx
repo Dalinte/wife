@@ -35,7 +35,6 @@ export default function WifeModel() {
 
 function activateAllActions (actions, animationsWeight) {
     Object.values(actions).forEach((action) => {
-        console.log(action._clip.name, animationsWeight[action._clip.name])
         setWeight(action, animationsWeight[action._clip.name])
         action.play()
     })

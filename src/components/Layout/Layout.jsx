@@ -1,13 +1,13 @@
 import './Layout.scss'
 import Scene from "../Model/Scene/Scene.jsx";
-import Chat from "../Chat/Chat.jsx";
+import Chat from "../Chat/Chat.tsx";
 import MusicPlayer from "../MusicPlayer/MusicPlayer.jsx";
 import Donate from "../Donate/Donate.jsx";
 import {Leva} from "leva";
 
 function Layout() {
     return (
-      <div className="layout">
+      <div className="layout dark">
           <div className="layout__canvas-container">
               <Scene/>
               <div className='gui-container'>

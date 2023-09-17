@@ -1,14 +1,15 @@
-$grid-column-gap: 50px;
-$grid-row-gap: 100px;
+$grid-column-gap: 10px;
+$grid-row-gap: 10px;
 
 .layout {
   height: 100vh;
+  padding: 10px;
   display: grid;
   grid-template-areas:
           'music-player chat'
           'canvas-container chat'
           'donate chat';
-  grid-gap: 50px 100px;
+  grid-gap: $grid-column-gap $grid-row-gap;
   grid-template-columns: calc(70% - $grid-row-gap) 30%;
   grid-template-rows: 100px calc(100% - 200px - $grid-column-gap * 2) 100px;
 

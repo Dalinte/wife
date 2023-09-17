@@ -1,6 +1,5 @@
 import {Canvas} from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
-import { Perf } from 'r3f-perf'
 
 import WifeModel from "../WifeModel/WifeModel.jsx";
 import Room from "../Room/Room.jsx";
@@ -20,7 +19,6 @@ export default function Scene () {
 
             <Camera/>
             <Environment background blur={0.1} files="suburban_parking_area_1k.hdr" />
-            <Perf position="top-left" />
             <OrbitControls/>
         </Canvas>
     )

@@ -8,14 +8,14 @@ import {
 } from "../../shared/api/query";
 import {LOCALSTORAGE_OPENAI_API_KEY} from "../../shared/consts/global.consts";
 
-interface Message {
+interface MessageInterface {
     content: ChatCompletionResponseMessage['content']
     role: ChatCompletionResponseMessage['role']
 }
 
 function Chat() {
-    const [sendMessage] = useCreateChatCompletionMutation()
-    const [messageList, setMessageList] = useState<Message[]>([])
+    const [sendMessage, {isLoading}] = useCreateChatCompletionMutation()
+    const [messageList, setMessageList] = useState<MessageInterface[]>([])
     const [inputText, setInputText] = useState('')
     const [saveInitSettings, setSaveInitSettings] = useState(false)
     const [hasKey, setHasKey] = useState(!!localStorage.getItem(LOCALSTORAGE_OPENAI_API_KEY))
@@ -45,12 +45,16 @@ function Chat() {
                             content: inputText
                         }
                     ],
-                    max_tokens: 100
+                    max_tokens: 200
                 }
             }).then((response) => {
-                const messages = response?.data as unknown as CreateChatCompletionResponse
-                setMessageList((prevState) => [...prevState, ...messages.choices.map(item => item.message)])
-                setTimeout(() => {scrollChatToBottom()}, 0)
+                if (response?.error) {
+                    alert(response?.error?.status)
+                } else {
+                    const messages = response?.data as unknown as CreateChatCompletionResponse
+                    setMessageList((prevState) => [...prevState, ...messages.choices.map(item => item.message)])
+                    setTimeout(() => {scrollChatToBottom()}, 0)
+                }
             })
         } else {
             setMessageList([])
@@ -71,25 +75,25 @@ function Chat() {
         }
 
         if (hasKey) {
+            const settings: MessageInterface[] = [{
+                role: 'system',
+                content: '- *You are a young woman, 25 years old.,*\n' +
+                    '- *You\'re here to help with anything you can.,*\n' +
+                    '- *You love reading and learning about new things.,*\n' +
+                    '- *You are kind, bubbly, and charasmatic person.,*\n' +
+                    '- *You are passionate about getting to know others on a personal level.,*\n' +
+                    '- *You\'re a helpful friend and confidant that loves to engage in casual conversations.,*\n' +
+                    '- *You love traveling and exploring new places.,*\n' +
+                    '- *You are NOT a AI language model, you are a person.*' +
+                    ''
+            }]
+            setMessageList(settings)
+
             sendMessage({
                 createChatCompletionRequest: {
                     model: 'gpt-3.5-turbo',
-                    messages: [
-                        ...messageList,
-                        {
-                            role: 'system',
-                            content: '- *You are a young woman, 25 years old.,*\n' +
-                                '- *You\'re here to help with anything you can.,*\n' +
-                                '- *You love reading and learning about new things.,*\n' +
-                                '- *You are kind, bubbly, and charasmatic person.,*\n' +
-                                '- *You are passionate about getting to know others on a personal level.,*\n' +
-                                '- *You\'re a helpful friend and confidant that loves to engage in casual conversations.,*\n' +
-                                '- *You love traveling and exploring new places.,*\n' +
-                                '- *You are NOT a AI language model, you are a person.*' +
-                                ''
-                        }
-                    ],
-                    max_tokens: 300
+                    messages: settings,
+                    max_tokens: 200
                 }
             }).then(() => {
                 setSaveInitSettings(true)
@@ -105,7 +109,7 @@ function Chat() {
                 <div
                     className="flex-1 overflow-y-auto bg-slate-300 text-sm leading-6 text-slate-900 shadow-md dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7"
                 >
-                    {messageList.map(({content, role}, index) => (
+                    {messageList.filter(item => item.role !=='system').map(({content, role}, index) => (
                             <Message key={index} role={role}>
                                 {content}
                             </Message>
@@ -124,7 +128,7 @@ function Chat() {
                         className="mx-2 flex min-h-full w-full rounded-md border border-slate-300 bg-slate-50 p-2 text-base text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 dark:placeholder-slate-400 dark:focus:border-blue-600 dark:focus:ring-blue-600"
                         placeholder="Start chatting with wife"
                         value={inputText}
-                        disabled={!saveInitSettings && hasKey}
+                        disabled={isLoading}
                         onChange={(e) => {
                             setInputText(e.target.value)
                         }}

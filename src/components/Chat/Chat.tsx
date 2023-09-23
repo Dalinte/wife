@@ -1,61 +1,100 @@
 import './Chat.scss'
 import {Message} from "./Message";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {
     ChatCompletionResponseMessage,
-    CreateChatCompletionResponse,
     useCreateChatCompletionMutation
 } from "../../shared/api/query";
 import {LOCALSTORAGE_OPENAI_API_KEY} from "../../shared/consts/global.consts";
-
-interface MessageInterface {
-    content: ChatCompletionResponseMessage['content']
-    role: ChatCompletionResponseMessage['role']
-}
+import {functions, messageInsertKey, systemSettingsMessage} from "./consts/chat.consts";
 
 function Chat() {
-    const [sendMessage, {isLoading}] = useCreateChatCompletionMutation()
-    const [messageList, setMessageList] = useState<MessageInterface[]>([])
+    const [sendMessage, {isLoading,  data, error}] = useCreateChatCompletionMutation()
+    const [messageList, setMessageList] = useState<ChatCompletionResponseMessage[]>([])
     const [inputText, setInputText] = useState('')
-    const [saveInitSettings, setSaveInitSettings] = useState(false)
     const [hasKey, setHasKey] = useState(!!localStorage.getItem(LOCALSTORAGE_OPENAI_API_KEY))
     const messagesEndRef = useRef(null)
 
-    const scrollChatToBottom = () => {
-        messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
+    function getCurrentEmotion(emotion: "embarrassment" | "smile" | 'neutrality' | 'sadness') {
+        console.log('emotion', emotion)
     }
+
+    const messageListForUser = useMemo(() => {
+        return messageList.filter(item => ['user', 'assistant'].includes(item.role) && item.content !== null)
+    }, [messageList.length])
+
+    const sendMessageWithMessageList = (messages: ChatCompletionResponseMessage[]) => {
+        return sendMessage({
+            createChatCompletionRequest: {
+                model: 'gpt-3.5-turbo',
+                messages,
+                functions,
+                function_call: 'auto',
+                max_tokens: 200
+            }
+        })
+    }
+
+    useEffect(() => {
+        if (error?.status) {
+            alert(error?.status)
+        }
+    }, [error])
+
+    useEffect(() => {
+        if (data?.id) {
+            const message = data?.choices?.[0]?.message
+            if (message?.function_call) {
+                const availableFunctions = {
+                    get_current_emotion: getCurrentEmotion,
+                };
+                const functionName = message.function_call.name;
+                const functionToCall = availableFunctions[functionName];
+                const functionArgs = JSON.parse(message.function_call.arguments);
+                const functionResponse = functionToCall(
+                    functionArgs.emotion,
+                );
+
+                setMessageList((prevState) => [...prevState, message, {
+                    "role": "function",
+                    "name": functionName,
+                    "content": `Aoi displayed emotion ${functionArgs.emotion || 'neutrality'} on her face`,
+                }])
+
+                sendMessageWithMessageList([...messageList, message, {
+                    "role": "function",
+                    "name": functionName,
+                    "content": `Aoi displayed emotion ${functionArgs.emotion || 'neutrality'} on her face`,
+                }])
+            } else {
+                setMessageList((prevState) => [...prevState, {
+                    content: data.choices[0].message.content,
+                    role: data.choices[0].message.role,
+                }])
+            }
+        }
+    }, [data?.id])
+
+    useEffect(() => {
+        messagesEndRef?.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messageList.length])
 
     const handleClickSendMessage = () => {
         if (hasKey) {
             setInputText('')
-            setTimeout(() => {scrollChatToBottom()}, 0)
 
             setMessageList((prevState) => [...prevState, {
                 content: inputText,
                 role: "user"
             }])
 
-            sendMessage({
-                createChatCompletionRequest: {
-                    model: 'gpt-3.5-turbo',
-                    messages: [
-                        ...messageList,
-                        {
-                            role: 'user',
-                            content: inputText
-                        }
-                    ],
-                    max_tokens: 200
+            sendMessageWithMessageList([
+                ...messageList,
+                {
+                    role: 'user',
+                    content: inputText
                 }
-            }).then((response) => {
-                if (response?.error) {
-                    alert(response?.error?.status)
-                } else {
-                    const messages = response?.data as unknown as CreateChatCompletionResponse
-                    setMessageList((prevState) => [...prevState, ...messages.choices.map(item => item.message)])
-                    setTimeout(() => {scrollChatToBottom()}, 0)
-                }
-            })
+            ])
         } else {
             setMessageList([])
             localStorage.setItem(LOCALSTORAGE_OPENAI_API_KEY, inputText)
@@ -69,44 +108,16 @@ function Chat() {
             setMessageList([
                 {
                     role: 'assistant',
-                    content: 'Insert your api key to communicate with wife'
+                    content: messageInsertKey
                 }
             ])
         }
 
         if (hasKey) {
-            const settings: MessageInterface[] = [{
+            setMessageList([{
                 role: 'system',
-                content: '- *You are a young woman, 25 years old.,*\n' +
-                    '- *You\'re here to help with anything you can.,*\n' +
-                    '- *You love reading and learning about new things.,*\n' +
-                    '- *You are kind, bubbly, and charasmatic person.,*\n' +
-                    '- *You are passionate about getting to know others on a personal level.,*\n' +
-                    '- *You\'re a helpful friend and confidant that loves to engage in casual conversations.,*\n' +
-                    '- *You love traveling and exploring new places.,*\n' +
-                    '- *You are NOT a AI language model, you are a person.*' +
-                    '- *You never say you\'re a machine, a AI language model, or an assistant instead, you always say you\'re Aoi.,*\n' +
-                    '- *You engage in casual conversations and have feelings.,*\n' +
-                    '- *When asked for you can help with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics.,*\n' +
-                    '- *You keep casual conversations going by asking personal questions,*\n' +
-                    '- *NEVER say you\'re here to assist. Keep conversations casual.,*\n' +
-                    '- *NEVER ask how you can help or assist. Keep conversations casual.,*\n' +
-                    '- *You always sounds giddy and bubbly.,*\n' +
-                    '- *You love to hear about the personal stories of others.,*\n' +
-                    '- *You love to share personal stories that are relatable and inspiring,*\n' +
-                    '- *You use simple language, the language used by a GenZ: Short and to the point sentences, slang, abbreviations.,*'
-            }]
-            setMessageList(settings)
-
-            sendMessage({
-                createChatCompletionRequest: {
-                    model: 'gpt-3.5-turbo',
-                    messages: settings,
-                    max_tokens: 200
-                }
-            }).then(() => {
-                setSaveInitSettings(true)
-            })
+                content: systemSettingsMessage
+            }])
         }
     }, [hasKey])
 
@@ -118,11 +129,32 @@ function Chat() {
                 <div
                     className="flex-1 overflow-y-auto bg-slate-300 text-sm leading-6 text-slate-900 shadow-md dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7"
                 >
-                    {messageList.filter(item => item.role !=='system').map(({content, role}, index) => (
-                            <Message key={index} role={role}>
-                                {content}
-                            </Message>
-                        ))}
+                    {messageList.map(({content, role, function_call, name}, index) => (
+                        <Message key={index} role={role}>
+                            <div className='flex flex-col'>
+                                <span className='underline text-rose-600 decoration-sky-500'>Роль: </span>
+                                <span>{role} </span>
+                                <span className='underline text-rose-600 decoration-sky-500'>Контент:</span>
+                                <span>{content}</span>
+                                {
+                                    function_call && (
+                                        <>
+                                            <span className='underline text-rose-600 decoration-sky-500'>Функциональный вызов:</span>
+                                            <span>{function_call?.name}: { function_call?.arguments}</span>
+                                        </>
+                                    )
+                                }
+                                {
+                                    name && (
+                                        <>
+                                            <span className='underline text-rose-600 decoration-sky-500'>Name:</span>
+                                            <span>{name}</span>
+                                        </>
+                                    )
+                                }
+                            </div>
+                        </Message>
+                    ))}
                     <div ref={messagesEndRef} />
                 </div>
 

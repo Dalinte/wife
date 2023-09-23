@@ -1,7 +1,12 @@
 import { create } from 'zustand'
 import {animationsNames} from './animationsNames'
 
-const actionsWeightList = {
+const defaultEnableWeightList = {
+    [animationsNames.boredBody]: 1,
+    [animationsNames.blinking]: 1,
+}
+
+const defaultActionsWeightList = {
     [animationsNames.typing]: 0,
     [animationsNames.boredBody]: 0,
     [animationsNames.sad]: 0,
@@ -13,12 +18,28 @@ const actionsWeightList = {
 }
 
 export const store = create((set) => ({
-    animationWeightList: actionsWeightList,
-    setAnimationWeight: (animationName, animationWeight) => set((state)=> (
+    animationWeightList: defaultActionsWeightList,
+    addAnimationWeight: (animationName, animationWeight) => set((state)=> (
         {
             animationWeightList: {
-                ...actionsWeightList,
+                ...state.animationWeightList,
                 [animationName]: animationWeight
+            }
+        }
+    )),
+    enableAnimationDisableAnother: (animationName, animationWeight) => set((state)=> (
+        {
+            animationWeightList: {
+                ...defaultActionsWeightList,
+                [animationName]: animationWeight
+            }
+        }
+    )),
+    enableStartedAnimations: () => set((state)=> (
+        {
+            animationWeightList: {
+                ...defaultActionsWeightList,
+                ...defaultEnableWeightList,
             }
         }
     )),

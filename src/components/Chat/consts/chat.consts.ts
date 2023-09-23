@@ -1,3 +1,12 @@
+export const emotionsObject = {
+    embarrassment: 'embarrassment',
+    smile: 'smile',
+    neutrality: 'neutrality',
+    sadness: 'sadness',
+}
+
+export const emotionsList = Object.keys(emotionsObject)
+
 export const functions = [
     {
         "name": "get_current_emotion",
@@ -7,7 +16,7 @@ export const functions = [
             "properties": {
                 "emotion": {
                     "type": "string",
-                    "enum": ["embarrassment", "smile", 'neutrality', 'sadness'],
+                    "enum": emotionsList,
                     "description": "Aoi's current emotion, e.g. embarrassment, smile, neutrality or sadness"
                 },
             },

@@ -6,5 +6,5 @@ export const animationsNames = {
     smiling: 'SmileBP',
     typing: 'Typing',
     wavingHand: 'WavingF',
-    blinking: 'WavingF',
+    blinking: 'blinkingBP',
 }

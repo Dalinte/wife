@@ -7,17 +7,34 @@ import {
 } from "../../shared/api/query";
 import {LOCALSTORAGE_OPENAI_API_KEY} from "../../shared/consts/global.consts";
 import {functions, messageInsertKey, systemSettingsMessage} from "./consts/chat.consts";
+import {store} from "../../shared/store";
+import {chatEmotionsToModel} from "./consts/chatEmotionsToModel";
+import {animationsNames} from "../../shared/animationsNames";
 
 function Chat() {
-    const [sendMessage, {isLoading,  data, error}] = useCreateChatCompletionMutation()
+    const [sendMessage, {isLoading, data, error}] = useCreateChatCompletionMutation()
     const [messageList, setMessageList] = useState<ChatCompletionResponseMessage[]>([])
     const [inputText, setInputText] = useState('')
     const [hasKey, setHasKey] = useState(!!localStorage.getItem(LOCALSTORAGE_OPENAI_API_KEY))
     const messagesEndRef = useRef(null)
+    const [animationWeightList, addAnimationWeight, enableAnimationDisableAnother, enableStartedAnimations] = store((state) => [state.animationWeightList, state.addAnimationWeight, state.enableAnimationDisableAnother, state.enableStartedAnimations])
 
     function getCurrentEmotion(emotion: "embarrassment" | "smile" | 'neutrality' | 'sadness') {
-        console.log('emotion', emotion)
+
+        addAnimationWeight(chatEmotionsToModel?.[emotion], 1)
     }
+
+    useEffect(() => {
+        enableStartedAnimations()
+    }, [])
+
+    useEffect(() => {
+        if (isLoading) {
+            enableAnimationDisableAnother(animationsNames.typing, 1)
+        } else {
+            enableStartedAnimations()
+        }
+    }, [isLoading])
 
     const messageListForUser = useMemo(() => {
         return messageList.filter(item => ['user', 'assistant'].includes(item.role) && item.content !== null)

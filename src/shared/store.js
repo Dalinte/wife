@@ -6,6 +6,13 @@ const defaultEnableWeightList = {
     [animationsNames.blinking]: 1,
 }
 
+const defaultEmotions = {
+    [animationsNames.sad]: 0,
+    [animationsNames.smiling]: 0,
+    [animationsNames.embarrass]: 0,
+    [animationsNames.blinking]: 0,
+}
+
 const defaultActionsWeightList = {
     [animationsNames.typing]: 0,
     [animationsNames.boredBody]: 0,
@@ -40,6 +47,15 @@ export const store = create((set) => ({
             animationWeightList: {
                 ...defaultActionsWeightList,
                 ...defaultEnableWeightList,
+            }
+        }
+    )),
+    addEmotion: (emotion, weight) => set((state) => (
+        {
+            animationWeightList: {
+                ...state.animationWeightList,
+                ...defaultEmotions,
+                [emotion]: weight
             }
         }
     )),

@@ -17,22 +17,25 @@ function Chat() {
     const [inputText, setInputText] = useState('')
     const [hasKey, setHasKey] = useState(!!localStorage.getItem(LOCALSTORAGE_OPENAI_API_KEY))
     const messagesEndRef = useRef(null)
-    const [animationWeightList, addAnimationWeight, enableAnimationDisableAnother, enableStartedAnimations] = store((state) => [state.animationWeightList, state.addAnimationWeight, state.enableAnimationDisableAnother, state.enableStartedAnimations])
+    const [animationWeightList, addEmotion, enableStartedAnimations, addAnimationWeight] = store((state) => [
+        state.animationWeightList,
+        state.addEmotion,
+        state.enableStartedAnimations,
+        state.addAnimationWeight
+    ])
+    console.log(animationWeightList)
 
     function getCurrentEmotion(emotion: "embarrassment" | "smile" | 'neutrality' | 'sadness') {
-
-        addAnimationWeight(chatEmotionsToModel?.[emotion], 1)
+        const emotionName = chatEmotionsToModel?.[emotion] || 'neutrality'
+        addEmotion(emotionName, 1)
+        addEmotion(chatEmotionsToModel[animationsNames.blinking], 1)
     }
 
     useEffect(() => {
-        enableStartedAnimations()
-    }, [])
-
-    useEffect(() => {
         if (isLoading) {
-            enableAnimationDisableAnother(animationsNames.typing, 1)
+            addAnimationWeight(animationsNames.typing, 1)
         } else {
-            enableStartedAnimations()
+            addAnimationWeight(animationsNames.typing, 0)
         }
     }, [isLoading])
 
@@ -68,9 +71,8 @@ function Chat() {
                 const functionName = message.function_call.name;
                 const functionToCall = availableFunctions[functionName];
                 const functionArgs = JSON.parse(message.function_call.arguments);
-                const functionResponse = functionToCall(
-                    functionArgs.emotion,
-                );
+                functionToCall(functionArgs.emotion);
+                console.log(111)
 
                 setMessageList((prevState) => [...prevState, message, {
                     "role": "function",

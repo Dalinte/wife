@@ -1,7 +1,7 @@
 import {Canvas} from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { Suspense } from "react";
-import WifeModel from "../WifeModel/WifeModel.jsx";
+import WifeModel from "../WifeModel/WifeModel.tsx";
 import Room from "../Room/Room.jsx";
 import Light from "../Light/Light.jsx";
 import Camera from "../Camera/Camera.jsx";
@@ -27,7 +27,7 @@ export default function Scene () {
 
                 <Camera/>
                 <Environment background blur={0.1} files="suburban_parking_area_1k.hdr" />
-                <OrbitControls/>
+                {/*<OrbitControls/>*/}
             </Suspense>
         </Canvas>
     )

@@ -1,12 +1,12 @@
 import { create } from 'zustand'
-import {animationsNames} from './animationsNames'
+import {animationsNames} from '../../shared/animationsNames'
 
 const defaultEnableWeightList = {
     [animationsNames.boredBody]: 1,
     [animationsNames.blinking]: 1,
 }
 
-const defaultEmotions = {
+export const defaultEmotions = {
     [animationsNames.sad]: 0,
     [animationsNames.smiling]: 0,
     [animationsNames.embarrass]: 0,
@@ -24,19 +24,19 @@ const defaultActionsWeightList = {
     [animationsNames.wavingHand]: 0,
 }
 
-export const store = create((set) => ({
-    animationWeightList: defaultActionsWeightList,
+export const animationsStore = create((set) => ({
+    animationWeights: defaultActionsWeightList,
     addAnimationWeight: (animationName, animationWeight) => set((state)=> (
         {
-            animationWeightList: {
-                ...state.animationWeightList,
+            animationWeights: {
+                ...state.animationWeights,
                 [animationName]: animationWeight
             }
         }
     )),
-    enableAnimationDisableAnother: (animationName, animationWeight) => set((state)=> (
+    enableOneAnimation: (animationName, animationWeight) => set((state)=> (
         {
-            animationWeightList: {
+            animationWeights: {
                 ...defaultActionsWeightList,
                 [animationName]: animationWeight
             }
@@ -44,7 +44,7 @@ export const store = create((set) => ({
     )),
     enableStartedAnimations: () => set((state)=> (
         {
-            animationWeightList: {
+            animationWeights: {
                 ...defaultActionsWeightList,
                 ...defaultEnableWeightList,
             }
@@ -52,8 +52,8 @@ export const store = create((set) => ({
     )),
     addEmotion: (emotion, weight) => set((state) => (
         {
-            animationWeightList: {
-                ...state.animationWeightList,
+            animationWeights: {
+                ...state.animationWeights,
                 ...defaultEmotions,
                 [emotion]: weight
             }

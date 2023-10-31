@@ -1,6 +1,6 @@
 function MusicPlayer() {
     return (
-        <div className='rounded-lg bg-slate-50 shadow dark:bg-slate-900'>
+        <div className='bg-slate-50 shadow dark:bg-slate-900'>
             <div className="flex w-full items-center justify-between space-x-6 p-6">
                 <button className="group flex-1 truncate">
                     <div className="flex items-center space-x-3">

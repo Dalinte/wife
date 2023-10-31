@@ -1,5 +1,5 @@
 import {Canvas} from "@react-three/fiber";
-import { Environment, OrbitControls } from "@react-three/drei";
+import {Environment} from "@react-three/drei";
 import { Suspense } from "react";
 import WifeModel from "../WifeModel/WifeModel.tsx";
 import Room from "../Room/Room.jsx";
@@ -20,14 +20,12 @@ export default function Scene () {
             <Suspense fallback={<Loader />}>
                 <group scale={scale}>
                     <WifeModel/>
-
                     <Room/>
                     <Light/>
                 </group>
 
                 <Camera/>
                 <Environment background blur={0.1} files="suburban_parking_area_1k.hdr" />
-                {/*<OrbitControls/>*/}
             </Suspense>
         </Canvas>
     )

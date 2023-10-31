@@ -7,9 +7,10 @@ import {
 } from "../../shared/api/query";
 import {LOCALSTORAGE_OPENAI_API_KEY} from "../../shared/consts/global.consts";
 import {functions, messageInsertKey, systemSettingsMessage} from "./consts/chat.consts";
-import {store} from "../../shared/store";
+
 import {chatEmotionsToModel} from "./consts/chatEmotionsToModel";
 import {animationsNames} from "../../shared/animationsNames";
+import {animationsStore} from "../../app/modules/animations";
 
 function Chat() {
     const [sendMessage, {isLoading, data, error}] = useCreateChatCompletionMutation()
@@ -17,13 +18,13 @@ function Chat() {
     const [inputText, setInputText] = useState('')
     const [hasKey, setHasKey] = useState(!!localStorage.getItem(LOCALSTORAGE_OPENAI_API_KEY))
     const messagesEndRef = useRef(null)
-    const [animationWeightList, addEmotion, enableStartedAnimations, addAnimationWeight] = store((state) => [
-        state.animationWeightList,
+    const [inaction, setInaction] = useState(false)
+    const [animationWeights, addEmotion, enableOneAnimation, enableStartedAnimations] = animationsStore((state) => [
+        state.addAnimationWeight,
         state.addEmotion,
-        state.enableStartedAnimations,
-        state.addAnimationWeight
+        state.enableOneAnimation,
+        state.enableStartedAnimations
     ])
-    console.log(animationWeightList)
 
     function getCurrentEmotion(emotion: "embarrassment" | "smile" | 'neutrality' | 'sadness') {
         const emotionName = chatEmotionsToModel?.[emotion] || 'neutrality'
@@ -33,11 +34,27 @@ function Chat() {
 
     useEffect(() => {
         if (isLoading) {
-            addAnimationWeight(animationsNames.typing, 1)
+            enableOneAnimation(animationsNames.typing, 1)
         } else {
-            addAnimationWeight(animationsNames.typing, 0)
+            enableStartedAnimations(animationsNames.typing, 0)
         }
     }, [isLoading])
+
+    useEffect(
+        () => {
+            let timer = setInterval(() => {
+                console.log('Бейздействие')
+                setMessageList((prevState) => [...prevState, {
+                    content: "You need to come up with a message or question for the interlocutor who hasn't written anything in a long time.",
+                    role: "assistant"
+                }])
+            }, Math.random() * 240000 + 60000);
+            return () => {
+                clearInterval(timer);
+            };
+        },
+        [messageList.length]
+    );
 
     const messageListForUser = useMemo(() => {
         return messageList.filter(item => ['user', 'assistant'].includes(item.role) && item.content !== null)
@@ -72,7 +89,6 @@ function Chat() {
                 const functionToCall = availableFunctions[functionName];
                 const functionArgs = JSON.parse(message.function_call.arguments);
                 functionToCall(functionArgs.emotion);
-                console.log(111)
 
                 setMessageList((prevState) => [...prevState, message, {
                     "role": "function",
@@ -143,7 +159,7 @@ function Chat() {
     return (
         <div className="chat">
             {/* Prompt Messages Container - Modify the height according to your need */}
-            <div className="flex h-[100vh] w-full flex-col">
+            <div className="flex h-[50vh] md:h-[100vh] w-full flex-col">
                 {/* Prompt Messages */}
                 <div
                     className="flex-1 overflow-y-auto bg-slate-300 text-sm leading-6 text-slate-900 shadow-md dark:bg-slate-800 dark:text-slate-300 sm:text-base sm:leading-7"
@@ -179,7 +195,7 @@ function Chat() {
 
                 {/* Prompt message input */}
                 <div
-                    className="flex w-full items-center rounded-b-md border-t border-slate-300 bg-slate-200 p-2 dark:border-slate-700 dark:bg-slate-900"
+                    className="flex w-full items-center border-t border-slate-300 bg-slate-200 p-2 dark:border-slate-700 dark:bg-slate-900"
                 >
                     <label htmlFor="chat" className="sr-only">Enter your prompt</label>
                     <input

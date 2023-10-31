@@ -1,37 +1,45 @@
 import {useAnimations, useGLTF} from "@react-three/drei";
 import {useEffect, useRef} from "react";
 import {useControls, button} from "leva";
-import {store} from "../../../shared/store.js";
-import {animationsNames} from "../../../shared/animationsNames.js";
+import {animationsStore, defaultEmotions} from "../../../app/modules/animations";
+import {animationsNames} from "../../../shared/animationsNames";
+import {LoopOnce} from "three";
+import {usePrevious} from "../../../shared/hooks/usePrevious";
 
 export default function WifeModel() {
     const ref = useRef()
     const {scene, animations} = useGLTF('/wife/AnimateGirle1.glb')
 
     const {actions} = useAnimations(animations, scene)
-    const [animationWeightList, addAnimationWeight, addEmotion, enableStartedAnimations] = store((state) => [
-        state.animationWeightList,
+    const [animationWeights, addAnimationWeight, addEmotion, enableStartedAnimations] = animationsStore((state) => [
+        state.animationWeights,
         state.addAnimationWeight,
         state.addEmotion,
         state.enableStartedAnimations,
     ])
 
-    const values = useControls({
-            'Печатает': button(() => addAnimationWeight(animationsNames.typing, 1)),
-            'Скучает (тело)': button(() => addAnimationWeight(animationsNames.boredBody, 1)),
-            'Скучает (лицо)': button(() => addAnimationWeight(animationsNames.boredFace, 1)),
-            'Грустит': button(() => addEmotion(animationsNames.sad, 1)),
-            'Машет рукой': button(() => addAnimationWeight(animationsNames.wavingHand, 1)),
-            'Моргает': button(() => addAnimationWeight(animationsNames.blinking, 1)),
-            'Улыбается': button(() => addEmotion(animationsNames.smiling, 1)),
-            'Смущается': button(() => addEmotion(animationsNames.embarrass, 1)),
-        })
+    const prevAnimationWeights = usePrevious(animationWeights)
 
-    activateAllActions(actions, animationWeightList)
+    // const values = useControls({
+    //         'Печатает': button(() => addAnimationWeight(animationsNames.typing, 1)),
+    //         'Скучает (тело)': button(() => addAnimationWeight(animationsNames.boredBody, 1)),
+    //         'Скучает (лицо)': button(() => addAnimationWeight(animationsNames.boredFace, 1)),
+    //         'Грустит': button(() => addEmotion(animationsNames.sad, 1)),
+    //         'Машет рукой': button(() => addAnimationWeight(animationsNames.wavingHand, 1)),
+    //         'Моргает': button(() => addAnimationWeight(animationsNames.blinking, 1)),
+    //         'Улыбается': button(() => addEmotion(animationsNames.smiling, 1)),
+    //         'Смущается': button(() => addEmotion(animationsNames.embarrass, 1)),
+    //     })
 
     useEffect(() => {
         enableStartedAnimations()
+        setDefaultAnimationSettings(actions)
     }, [])
+
+    useEffect(() => {
+        disablePrevActions(actions, prevAnimationWeights)
+        activateNewActions(actions, animationWeights)
+    }, [animationWeights])
 
     return (
         <mesh ref={ref}>
@@ -43,15 +51,36 @@ export default function WifeModel() {
     )
 }
 
-function activateAllActions (actions, animationsWeight) {
+function disablePrevActions (actions, animationsWeight) {
     Object.values(actions).forEach((action) => {
-        setWeight(action, animationsWeight[action._clip.name])
-        action.play()
+        if (animationsWeight?.[action._clip.name]) {
+            action.fadeOut( 1 )
+        }
     })
 }
 
-function setWeight( action, weight ) {
-    action.enabled = true;
-    action.setEffectiveTimeScale( 1 );
-    action.setEffectiveWeight( weight );
+function activateNewActions (actions, animationsWeight) {
+    Object.values(actions).forEach((action) => {
+        if (animationsWeight[action._clip.name]) {
+            playAction(action, animationsWeight[action._clip.name])
+        }
+    })
 }
+
+function setDefaultAnimationSettings(actions) {
+    Object.values(actions).forEach((action) => {
+       if (defaultEmotions[action._clip.name] !== undefined) {
+           action.clampWhenFinished = true;
+           action.loop = LoopOnce;
+       }
+    })
+}
+
+const playAction = (action, weight) => {
+    action.reset()
+        .setEffectiveTimeScale( 1 )
+        .setEffectiveWeight( weight )
+        .fadeIn( 0.2 )
+        .play();
+}
+

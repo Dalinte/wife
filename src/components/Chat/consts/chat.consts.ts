@@ -25,7 +25,7 @@ export const functions = [
     }
 ];
 
-export const messageInsertKey = 'Insert your api key to communicate with wife'
+export const messageInsertKey = 'Hello! My name is AOI. Please insert your OpenAI API key to "make me come alive”. https://platform.openai.com/account/api-keys'
 
 export const systemSettingsMessage = '- *You are a young woman, 25 years old.,*\n' +
     '- *You love reading and learning about new things.,*\n' +
